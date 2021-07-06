@@ -1,4 +1,5 @@
 const readline = require('readline');
+const chalk = require('chalk');
 
 function FizzBuzz(i: number) {
     let s: string[] = [];
@@ -9,19 +10,44 @@ function FizzBuzz(i: number) {
     if (i % 11 == 0) s = ["Bong"];
     if (i % 13 == 0) {
         const pos = s.findIndex(i => i.startsWith("B"));
-        s.splice(pos, 0, "Fezz");
+        if (pos >= 0) s.splice(pos, 0, "Fezz");
+        else s.push("Fezz");
     }
     if (i % 17 == 0) s.reverse();
 
     return s.length ? s.join("") : i;
 }
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+function test(num: number, ans: string): boolean {
+    const out = FizzBuzz(num);
+    const result = out == ans;
 
-rl.question("Please input number: ", (num: number) => {
-    for (var i = 0; i <= num; i++) console.log(FizzBuzz(i));
-    rl.close();
-})
+    const color = result ? chalk.green : chalk.red;
+
+    console.log(color(`${num} out: ${out}`));
+    return result;
+}
+
+function tests() {
+    test(21, "FizzBang");
+    test(33, "Bong");
+    test(65, "FezzBuzz");
+    test(143, "FezzBong");
+    test(195, "FizzFezzBuzz");
+    test(255, "BuzzFizz");
+}
+
+function propmt() {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    rl.question("Please input number: ", (num: number) => {
+        for (var i = 1; i <= num; i++) console.log(FizzBuzz(i));
+        rl.close();
+    })
+}
+
+tests();
+propmt();
