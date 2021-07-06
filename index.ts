@@ -1,3 +1,5 @@
+const readline = require('readline');
+
 function FizzBuzz(i: number) {
     let s: string[] = [];
 
@@ -14,10 +16,12 @@ function FizzBuzz(i: number) {
     return s.length ? s.join("") : i;
 }
 
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
-console.log(FizzBuzz(21)); // "FizzBang"
-console.log(FizzBuzz(33)); // "Bong"
-console.log(FizzBuzz(65)); // "FezzBuzz"
-console.log(FizzBuzz(143)); // "FezzBong"
-console.log(FizzBuzz(195)); // "FizzFezzBuzz"
-console.log(FizzBuzz(255)); // "BuzzFizz"
+rl.question("Please input number: ", (num: number) => {
+    for (var i = 0; i <= num; i++) console.log(FizzBuzz(i));
+    rl.close();
+})
