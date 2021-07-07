@@ -1,13 +1,13 @@
+import { configure, getLogger } from "log4js";
 import readline from "readline";
 import Bank from "./Bank";
-import { configure, getLogger } from "log4js";
 
 configure({
   appenders: {
     file: { type: "fileSync", filename: "logs/debug.log" },
   },
   categories: {
-    default: { appenders: ["file"], level: "error" },
+    default: { appenders: ["file"], level: "debug" },
   },
 });
 
@@ -26,11 +26,11 @@ function ask(question: string): Promise<string> {
   });
 }
 
-const bank = new Bank();
-
-bank.fromCSV("./DodgyTransactions2015.csv").then(async (val) => {
+async function menu() {
   while (true) {
-    const ans = await ask("\nUsage: List All | List [Name] | quit\n");
+    const ans = await ask(
+      "\nUsage: List All | List [name] | Import File [filename] | quit\n"
+    );
     logger.info("Command: " + ans);
     switch (ans) {
       case "quit":
@@ -43,12 +43,45 @@ bank.fromCSV("./DodgyTransactions2015.csv").then(async (val) => {
         logger.info("List All executed");
         break;
       default:
-        if (!ans.startsWith("List ")) continue;
-        const name = ans.replace(/^List /, "");
-        bank.listTransactions(name);
-        logger.info("List Transactions executed");
+        if (ans.startsWith("List ")) {
+          const name = ans.replace(/^List /, "");
+          bank.listTransactions(name);
+          logger.info("List Transactions executed");
+        } else if (ans.startsWith("Import File ")) {
+          const filename = ans.replace(/^Import File /, "");
+          const ext = filename.split(".").pop();
+          var handler = undefined;
+          switch (ext) {
+            case "csv":
+              handler = bank.fromCSV;
+              break;
+            case "json":
+              handler = bank.fromJSON;
+              break;
+            case "xml":
+              handler = bank.fromXML;
+              break;
+            default:
+              console.log("Unsupported file extension");
+          }
+
+          handler &&
+            (await handler
+              .bind(bank)(filename)
+              .catch((err) => {
+                console.log(err);
+                logger.error(err);
+              }));
+        } else if (ans.startsWith("Export File ")) {
+        } else {
+          console.log("Unknown command");
+        }
     }
   }
-});
+}
+
+const bank = new Bank();
+
+menu();
 
 export { logger };

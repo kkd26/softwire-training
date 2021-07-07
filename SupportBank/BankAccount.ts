@@ -1,8 +1,4 @@
-interface Transaction {
-  narrative: string;
-  date: Date;
-  amount: number;
-}
+import Transaction from "./Transaction";
 
 class BankAccount {
   private _name: string;
