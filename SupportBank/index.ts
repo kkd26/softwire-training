@@ -73,6 +73,8 @@ async function menu() {
                 logger.error(err);
               }));
         } else if (ans.startsWith("Export File ")) {
+          const filename = ans.replace(/^Export File /, "");
+          bank.exportTransactions(filename);
         } else {
           console.log("Unknown command");
         }

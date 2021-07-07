@@ -1,5 +1,5 @@
+import { Builder } from "xml2js";
 import Transaction from "./Transaction";
-
 const NUM_MILL_IN_DAY = 24 * 60 * 60 * 1000;
 
 export function fromCSVEntry(row: string[]): Transaction {
@@ -51,4 +51,79 @@ export function fromXMLEntry(entry: {
   if (isNaN(amount)) throw `${entry.Value[0]} is not a number`;
 
   return { date, from, to, narrative, amount };
+}
+
+export function toCSV(transactions: Transaction[], delimiter: string): string {
+  const headings = ["Date", "From", "To", "Narrative", "Amount"].join(
+    delimiter
+  );
+  const out = [headings];
+  transactions.forEach((transaction) => {
+    const year = transaction.date.getFullYear();
+    const month = (transaction.date.getMonth() + 1).toString().padStart(2, "0");
+    const day = transaction.date.getDate().toString().padStart(2, "0");
+
+    const row = [
+      [day, month, year].join("/"),
+      transaction.from,
+      transaction.to,
+      transaction.narrative,
+      transaction.amount.toString(),
+    ];
+    out.push(row.join(delimiter));
+  });
+  return out.join("\n");
+}
+
+export function toJSON(transactions: Transaction[]): string {
+  const out: Array<{
+    Date: string;
+    FromAccount: string;
+    ToAccount: string;
+    Narrative: string;
+    Amount: number;
+  }> = [];
+  transactions.forEach((transaction) => {
+    const entry = {
+      Date: transaction.date.toISOString(),
+      FromAccount: transaction.from || "",
+      ToAccount: transaction.to || "",
+      Narrative: transaction.narrative,
+      Amount: transaction.amount,
+    };
+    out.push(entry);
+  });
+  return JSON.stringify(out);
+}
+
+export function toXML(transactions: Transaction[]): string {
+  const obj: Array<{
+    SupportTransaction: {
+      $: { Date: string };
+      Description: string[];
+      Value: string[];
+      Parties: Array<{ From: string[]; To: string[] }>;
+    };
+  }> = [];
+
+  transactions.forEach((transaction) => {
+    const entry = {
+      SupportTransaction: {
+        $: {
+          Date: (
+            Math.round(transaction.date.getTime() / NUM_MILL_IN_DAY) +
+            70 * 365
+          ).toString(),
+        },
+        Description: [transaction.narrative],
+        Value: [transaction.amount.toString()],
+        Parties: [
+          { From: [transaction.from || ""], To: [transaction.to || ""] },
+        ],
+      },
+    };
+    obj.push(entry);
+  });
+  const out = new Builder().buildObject({ TransactionList: obj });
+  return out;
 }

@@ -3,7 +3,14 @@ import fs from "fs";
 import path from "path";
 import { parseStringPromise as parseXML } from "xml2js";
 import BankAccount from "./BankAccount";
-import { fromCSVEntry, fromJSONEntry, fromXMLEntry } from "./helper";
+import {
+  fromCSVEntry,
+  fromJSONEntry,
+  fromXMLEntry,
+  toCSV,
+  toJSON,
+  toXML,
+} from "./helper";
 import { logger } from "./index";
 import Transaction from "./Transaction";
 
@@ -78,6 +85,7 @@ class Bank {
   }
 
   fromXML(file: string): Promise<void> {
+    this.clearBank();
     const _this = this;
     return new Promise(async (res, rej) => {
       if (!fs.existsSync(path.resolve(file))) {
@@ -101,6 +109,31 @@ class Bank {
       logger.info(`File ${file} loaded`);
       res();
     });
+  }
+
+  exportTransactions(filename: string) {
+    const filePath = path.resolve(filename);
+    if (fs.existsSync(filePath)) {
+      return console.log("File exists");
+    }
+
+    const ext = filename.split(".").pop();
+    var out = undefined;
+    switch (ext) {
+      case "csv":
+        out = toCSV(this.transactions, ",");
+        break;
+      case "json":
+        out = toJSON(this.transactions);
+        break;
+      case "xml":
+        out = toXML(this.transactions);
+        break;
+    }
+    if (out) {
+      fs.writeFileSync(filePath, out);
+      console.log(`Transactions exported to file ${filename}`);
+    }
   }
 
   clearBank() {
