@@ -11,15 +11,15 @@ import {
   toJSON,
   toXML,
 } from "./helper";
-import { logger } from "./index";
-import Transaction from "./Transaction";
+import logger from "./logger";
+import { Transaction } from "./Models";
 
 class Bank {
   private accounts: { [name: string]: BankAccount } = {};
   private transactions: Transaction[] = [];
 
   fromCSV(file: string): Promise<void> {
-    logger.info("Method call on Bank: fromCSV");
+    logger.trace("Method call on Bank: fromCSV");
     this.clearBank();
     const _this = this;
 
@@ -55,7 +55,7 @@ class Bank {
   }
 
   fromJSON(file: string): Promise<void> {
-    logger.info("Method call on Bank: fromJSON");
+    logger.trace("Method call on Bank: fromJSON");
     this.clearBank();
     const _this = this;
     return new Promise((res, rej) => {
@@ -141,18 +141,23 @@ class Bank {
     this.accounts = {};
   }
 
-  addPerson(name: string) {
+  addPerson(name: string): BankAccount {
     logger.info(`Method call on Bank: Add Person - ${name}`);
     this.accounts[name] = new BankAccount(name);
     return this.accounts[name];
   }
 
-  private credit(date: Date, name: string, narrative: string, amount: number) {
+  private credit(
+    date: Date,
+    name: string,
+    narrative: string,
+    amount: number
+  ): void {
     let account = this.accounts[name] || this.addPerson(name);
     account.credit(amount, date, narrative);
   }
 
-  transaction({ date, from, to, narrative, amount }: Transaction) {
+  transaction({ date, from, to, narrative, amount }: Transaction): void {
     logger.info(
       `Method call on Bank: Transaction - ${date.toDateString()} -- ${from} -- ${to} -- ${narrative} -- ${amount}`
     );
@@ -161,18 +166,21 @@ class Bank {
     this.credit(date, to || "", narrative, -amount);
   }
 
-  listAll() {
+  listAll(): string {
     logger.info(`Method call on Bank: List All`);
+    var out = "";
     for (const name in this.accounts) {
       if (Object.prototype.hasOwnProperty.call(this.accounts, name)) {
         const account = this.accounts[name];
-        account.statement();
+        out += account.statement() + "\n";
       }
     }
+    return out;
   }
 
-  listTransactions(name: string) {
-    this.accounts[name] && this.accounts[name].listTransactions();
+  listTransactions(name: string): string {
+    const out = this.accounts[name] && this.accounts[name].listTransactions();
+    return out;
   }
 }
 

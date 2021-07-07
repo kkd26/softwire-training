@@ -1,9 +1,10 @@
 {
   "name": "supportbank",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "start": "ts-node index.ts"
+    "start": "ts-node src/index.ts",
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -17,7 +18,13 @@
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.14.5",
+    "@babel/preset-env": "^7.14.7",
+    "@babel/preset-typescript": "^7.14.5",
+    "@types/jest": "^26.0.24",
     "@types/readline-sync": "^1.4.3",
-    "@types/xml2js": "^0.4.9"
+    "@types/xml2js": "^0.4.9",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.3"
   }
 }

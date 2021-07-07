@@ -1,17 +1,6 @@
-import { configure, getLogger } from "log4js";
 import readline from "readline";
 import Bank from "./Bank";
-
-configure({
-  appenders: {
-    file: { type: "fileSync", filename: "logs/debug.log" },
-  },
-  categories: {
-    default: { appenders: ["file"], level: "debug" },
-  },
-});
-
-const logger = getLogger("log.txt");
+import logger from "./logger";
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -39,13 +28,13 @@ async function menu() {
         logger.info("ReadLine stream closed");
         return;
       case "List All":
-        bank.listAll();
+        console.log(bank.listAll());
         logger.info("List All executed");
         break;
       default:
         if (ans.startsWith("List ")) {
           const name = ans.replace(/^List /, "");
-          bank.listTransactions(name);
+          console.log(bank.listTransactions(name));
           logger.info("List Transactions executed");
         } else if (ans.startsWith("Import File ")) {
           const filename = ans.replace(/^Import File /, "");
@@ -85,5 +74,3 @@ async function menu() {
 const bank = new Bank();
 
 menu();
-
-export { logger };

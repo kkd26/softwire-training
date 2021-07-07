@@ -1,5 +1,6 @@
 import { Builder } from "xml2js";
-import Transaction from "./Transaction";
+import { JsonEntry, Transaction, XMLEntry } from "./Models";
+
 const NUM_MILL_IN_DAY = 24 * 60 * 60 * 1000;
 
 export function fromCSVEntry(row: string[]): Transaction {
@@ -18,13 +19,7 @@ export function fromCSVEntry(row: string[]): Transaction {
   return { date, from, to, narrative, amount };
 }
 
-export function fromJSONEntry(entry: {
-  Date: string;
-  FromAccount: string;
-  ToAccount: string;
-  Narrative: string;
-  Amount: string;
-}): Transaction {
+export function fromJSONEntry(entry: JsonEntry): Transaction {
   const date = new Date(entry.Date);
   if (isNaN(date.getTime())) throw `${entry.Date} is not a date`;
   const from = entry.FromAccount;
@@ -36,12 +31,7 @@ export function fromJSONEntry(entry: {
   return { date, from, to, narrative, amount };
 }
 
-export function fromXMLEntry(entry: {
-  $: { Date: string };
-  Description: string[];
-  Value: string[];
-  Parties: Array<{ From: string[]; To: string[] }>;
-}): Transaction {
+export function fromXMLEntry(entry: XMLEntry): Transaction {
   const date = new Date((Number(entry.$.Date) - 70 * 365) * NUM_MILL_IN_DAY);
   if (isNaN(date.getTime())) throw `${entry.$.Date} is not a date`;
   const from = entry.Parties[0].From[0];
@@ -76,13 +66,7 @@ export function toCSV(transactions: Transaction[], delimiter: string): string {
 }
 
 export function toJSON(transactions: Transaction[]): string {
-  const out: Array<{
-    Date: string;
-    FromAccount: string;
-    ToAccount: string;
-    Narrative: string;
-    Amount: number;
-  }> = [];
+  const out: Array<JsonEntry> = [];
   transactions.forEach((transaction) => {
     const entry = {
       Date: transaction.date.toISOString(),
@@ -97,14 +81,7 @@ export function toJSON(transactions: Transaction[]): string {
 }
 
 export function toXML(transactions: Transaction[]): string {
-  const obj: Array<{
-    SupportTransaction: {
-      $: { Date: string };
-      Description: string[];
-      Value: string[];
-      Parties: Array<{ From: string[]; To: string[] }>;
-    };
-  }> = [];
+  const obj: Array<{ SupportTransaction: XMLEntry }> = [];
 
   transactions.forEach((transaction) => {
     const entry = {
