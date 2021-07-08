@@ -111,6 +111,8 @@ class Bank {
     });
   }
 
+  fromFile(file: string) {}
+
   exportTransactions(filename: string) {
     const filePath = path.resolve(filename);
     if (fs.existsSync(filePath)) {

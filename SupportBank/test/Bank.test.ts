@@ -1,5 +1,7 @@
 import Bank from "../src/Bank";
 import { EmptyNameError } from "../src/Models";
+import fs from "fs";
+import path from "path";
 
 const testName = "Test Person";
 
@@ -37,6 +39,30 @@ test("Import File - json to json", async () => {
   const expectedList = bank.listAll();
 
   // Act
+  if (fs.existsSync(path.resolve(outFile)))
+    fs.unlinkSync(path.resolve(outFile));
+  bank.exportTransactions(outFile);
+  const newBank = new Bank();
+  await newBank.fromJSON(outFile);
+
+  const list = newBank.listAll();
+
+  // Assert
+  expect(list).toBe(expectedList);
+});
+
+test("Import File - csv to json", async () => {
+  // Arrange
+  const bank = new Bank();
+  const inFile = "./data/Transactions2014.csv";
+  const outFile = "/tmp/test.json";
+
+  await bank.fromCSV(inFile);
+  const expectedList = bank.listAll();
+
+  // Act
+  if (fs.existsSync(path.resolve(outFile)))
+    fs.unlinkSync(path.resolve(outFile));
   bank.exportTransactions(outFile);
   const newBank = new Bank();
   await newBank.fromJSON(outFile);
