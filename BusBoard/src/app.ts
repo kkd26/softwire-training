@@ -16,7 +16,7 @@ app.get("/StopPoint", (req, res) => {
 app.get("/departureBoards/:postCode", async (req, res) => {
   const { postCode } = req.params;
   const busStops = await getBusStops(postCode);
-  console.log(busStops);
+
   const busRequests = busStops.map((busStop) => getBuses(busStop.naptanId));
 
   const busInfo = await Promise.all(busRequests);
@@ -24,7 +24,10 @@ app.get("/departureBoards/:postCode", async (req, res) => {
   var obj = {};
 
   busStops.forEach((busStop, i) => {
-    obj = { ...obj, [busStop.commonName]: busInfo[i] };
+    obj = {
+      ...obj,
+      [`${busStop.commonName} ${busStop.stopLetter ?? ""}`.trim()]: busInfo[i],
+    };
   });
 
   res.json(obj);

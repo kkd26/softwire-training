@@ -6,10 +6,6 @@ interface Location {
 }
 
 const stopTypes: string[] = [
-  "NaptanBusCoachStation",
-  "NaptanBusWayPoint",
-  "NaptanOnstreetBusCoachStopCluster",
-  "NaptanOnstreetBusCoachStopPair",
   "NaptanPrivateBusCoachTram",
   "NaptanPublicBusCoachTram",
 ];
@@ -26,6 +22,8 @@ async function getLocation(postCode: string) {
 interface BusStop {
   naptanId: string;
   commonName: string;
+  distance: number;
+  stopLetter: string;
 }
 
 export default async function getBusStops(
@@ -39,5 +37,5 @@ export default async function getBusStops(
     params: { stopTypes: stopTypes.join(","), radius, lat, lon },
   });
 
-  return data.stopPoints.slice(0, num);
+  return data.stopPoints.sort((a, b) => a.distance - b.distance).slice(0, num);
 }
