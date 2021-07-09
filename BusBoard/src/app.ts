@@ -5,13 +5,7 @@ import getBusStops from "./getBusStops";
 const app = express();
 const port = 3000;
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
-
-app.get("/StopPoint", (req, res) => {
-  res.send("Hello World");
-});
+app.use('/', express.static('src'));
 
 app.get("/departureBoards/:postCode", async (req, res) => {
   const { postCode } = req.params;
@@ -32,6 +26,7 @@ app.get("/departureBoards/:postCode", async (req, res) => {
 
   res.json(obj);
 });
+
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
