@@ -1,0 +1,55 @@
+h1 {
+  text-transform: uppercase;
+}
+
+.center {
+  text-align: center;
+}
+
+#form {
+  display: flex;
+  flex-direction: column;
+  max-width: 50%;
+  width: 200px;
+  margin: auto;
+}
+
+#form > * {
+  margin: 5px;
+}
+
+#root {
+  width: 100%;
+  display: flex;
+}
+
+ul {
+  width: 50%;
+  display: grid;
+}
+
+li {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.stopName {
+  padding: 10px;
+  font-weight: bold;
+  color: red;
+}
+
+.lineName {
+  font-weight: bold;
+  color: green;
+  font-size: 32;
+}
+
+.destinationName {
+}
+
+.expectedArrival {
+  font-weight: bold;
+  color: blue;
+}
