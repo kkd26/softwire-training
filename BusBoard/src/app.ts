@@ -27,7 +27,6 @@ app.get("/departureBoards/:postCode", async (req, res) => {
     const busRequests = busStops.map((busStop) => getBuses(busStop.naptanId));
 
     const busInfo = await Promise.all(busRequests);
-
     var obj = {};
 
     busStops.forEach((busStop, i) => {

@@ -8,7 +8,7 @@ function submitForm(e) {
   const target = e.target;
   const postcodeInput = target.children.postcode;
   const postcode = postcodeInput.value;
-  console.log(postcode);
+
   getBuses(postcode);
 }
 
@@ -33,6 +33,11 @@ function getBuses(postcode) {
 
 function loadData(busData) {
   root.innerText = "";
+
+  if (isEmpty(busData)) {
+    root.innerText = "There are no bus stops near your location";
+    return;
+  }
 
   for (const stopName in busData) {
     if (Object.hasOwnProperty.call(busData, stopName)) {
@@ -69,4 +74,8 @@ function createUl(stopName, busList) {
 
 function displayError({ message }) {
   alert(message);
+}
+
+function isEmpty(obj) {
+  return obj && Object.keys(obj).length === 0;
 }
