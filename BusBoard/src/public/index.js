@@ -19,10 +19,13 @@ function getBuses(postcode) {
   xhttp.setRequestHeader("Content-Type", "application/json");
 
   xhttp.onload = function () {
-    // Handle response here using e.g. xhttp.status, xhttp.response, xhttp.responseText
     const busData = JSON.parse(this.responseText);
 
-    loadData(busData);
+    if (this.status >= 400) {
+      displayError(busData);
+    } else {
+      loadData(busData);
+    }
   };
 
   xhttp.send();
@@ -62,4 +65,8 @@ function createUl(stopName, busList) {
   }
 
   return ul;
+}
+
+function displayError({ message }) {
+  alert(message);
 }

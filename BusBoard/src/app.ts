@@ -5,28 +5,47 @@ import getBusStops from "./getBusStops";
 const app = express();
 const port = 3000;
 
-app.use('/', express.static('src'));
+type ErrorMessage = {
+  message: string;
+};
+
+app.use("/", express.static("src/public"));
+
+app.get("/departureBoards", (req, res) => {
+  const errorMessage: ErrorMessage = {
+    message: "Empty postcode",
+  };
+  res.status(400).send(errorMessage);
+});
 
 app.get("/departureBoards/:postCode", async (req, res) => {
   const { postCode } = req.params;
-  const busStops = await getBusStops(postCode);
 
-  const busRequests = busStops.map((busStop) => getBuses(busStop.naptanId));
+  try {
+    const busStops = await getBusStops(postCode);
 
-  const busInfo = await Promise.all(busRequests);
+    const busRequests = busStops.map((busStop) => getBuses(busStop.naptanId));
 
-  var obj = {};
+    const busInfo = await Promise.all(busRequests);
 
-  busStops.forEach((busStop, i) => {
-    obj = {
-      ...obj,
-      [`${busStop.commonName} ${busStop.stopLetter ?? ""}`.trim()]: busInfo[i],
+    var obj = {};
+
+    busStops.forEach((busStop, i) => {
+      obj = {
+        ...obj,
+        [`${busStop.commonName} ${busStop.stopLetter ?? ""}`.trim()]:
+          busInfo[i],
+      };
+    });
+    res.json(obj);
+  } catch (err) {
+    const { status, data } = err.response;
+    const errorMessage: ErrorMessage = {
+      message: data.message || data.error,
     };
-  });
-
-  res.json(obj);
+    res.status(status).send(errorMessage);
+  }
 });
-
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
