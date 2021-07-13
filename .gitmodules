@@ -1,3 +1,6 @@
 [submodule "chessington-js"]
 	path = chessington-js
 	url = git@github.com:kkd26/chessington-js.git
+[submodule "MarsAppSPA"]
+	path = MarsAppSPA
+	url = git@github.com:kkd26/MarsAppSPA.git
