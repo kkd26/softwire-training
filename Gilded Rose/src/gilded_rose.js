@@ -1,60 +1,63 @@
 class Item {
-  constructor(name, sellIn, quality){
+  constructor(name, sellIn, quality) {
     this.name = name;
     this.sellIn = sellIn;
     this.quality = quality;
   }
 }
 
+const ITEM = {
+  BRIE: "Aged Brie",
+  BACKSTAGE: "Backstage passes to a TAFKAL80ETC concert",
+  SULFURAS: "Sulfuras, Hand of Ragnaros",
+  CONJURED: "Conjured",
+};
+
 class Shop {
-  constructor(items=[]){
+  constructor(items = []) {
     this.items = items;
   }
   updateQuality() {
     for (let i = 0; i < this.items.length; i++) {
-      if (this.items[i].name != 'Aged Brie' && this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-        if (this.items[i].quality > 0) {
-          if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-            this.items[i].quality = this.items[i].quality - 1;
+      var { quality } = this.items[i];
+      var { name, quality: tQuality, sellIn } = this.items[i];
+
+      if (/^Conjured/.test(name)) name = ITEM.CONJURED;
+
+      switch (name) {
+        case ITEM.BRIE:
+          tQuality++;
+          if (sellIn <= 0) tQuality++;
+          break;
+        case ITEM.BACKSTAGE:
+          tQuality++;
+          if (sellIn <= 10) tQuality++;
+          if (sellIn <= 5) tQuality++;
+          if (sellIn <= 0) {
+            quality = tQuality = 0;
           }
-        }
-      } else {
-        if (this.items[i].quality < 50) {
-          this.items[i].quality = this.items[i].quality + 1;
-          if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
-            if (this.items[i].sellIn < 11) {
-              if (this.items[i].quality < 50) {
-                this.items[i].quality = this.items[i].quality + 1;
-              }
-            }
-            if (this.items[i].sellIn < 6) {
-              if (this.items[i].quality < 50) {
-                this.items[i].quality = this.items[i].quality + 1;
-              }
-            }
-          }
-        }
+
+          break;
+        case ITEM.SULFURAS:
+          break;
+
+        case ITEM.CONJURED:
+          tQuality -= 2;
+          if (sellIn <= 0) tQuality -= 2;
+          break;
+
+        default:
+          tQuality--;
+          if (sellIn <= 0) tQuality--;
+          break;
       }
-      if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-        this.items[i].sellIn = this.items[i].sellIn - 1;
-      }
-      if (this.items[i].sellIn < 0) {
-        if (this.items[i].name != 'Aged Brie') {
-          if (this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-            if (this.items[i].quality > 0) {
-              if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                this.items[i].quality = this.items[i].quality - 1;
-              }
-            }
-          } else {
-            this.items[i].quality = this.items[i].quality - this.items[i].quality;
-          }
-        } else {
-          if (this.items[i].quality < 50) {
-            this.items[i].quality = this.items[i].quality + 1;
-          }
-        }
-      }
+
+      tQuality = Math.max(0, Math.min(50, tQuality));
+
+      if (quality >= 50) tQuality = quality;
+
+      sellIn--;
+      this.items[i] = { ...this.items[i], quality: tQuality, sellIn };
     }
 
     return this.items;
@@ -63,5 +66,6 @@ class Shop {
 
 module.exports = {
   Item,
-  Shop
-}
+  Shop,
+  ITEM,
+};
