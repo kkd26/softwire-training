@@ -293,3 +293,68 @@ describe("Check if quality greater than 50 ", function () {
     });
   });
 });
+
+describe("Test Conjured items", function () {
+  it.each([2, 3, 4, 5, 10, 49])(
+    "update quality before sellIn quality %i",
+    function (q) {
+      const itemName = "Conjured foo";
+      const quality = q;
+      const sellIn = 10;
+      const gildedRose = new Shop([new Item(itemName, sellIn, quality)]);
+      const items = gildedRose.updateQuality();
+
+      const expectedQuality = q - 2;
+      const actualQuality = items[0].quality;
+
+      expect(actualQuality).toBe(expectedQuality);
+    }
+  );
+
+  it("update quality before sellIn quality %i", function () {
+    const itemName = "Conjured foo";
+    const quality = 1;
+    const sellIn = 10;
+    const gildedRose = new Shop([new Item(itemName, sellIn, quality)]);
+    const items = gildedRose.updateQuality();
+
+    const expectedQuality = 0;
+    const actualQuality = items[0].quality;
+
+    expect(actualQuality).toBe(expectedQuality);
+  });
+});
+
+describe("Test Conjured items", function () {
+  it.each([4, 5, 10, 49])(
+    "update quality before sellIn quality %i",
+    function (q) {
+      const itemName = "Conjured foo";
+      const quality = q;
+      const sellIn = -1;
+      const gildedRose = new Shop([new Item(itemName, sellIn, quality)]);
+      const items = gildedRose.updateQuality();
+
+      const expectedQuality = q - 4;
+      const actualQuality = items[0].quality;
+
+      expect(actualQuality).toBe(expectedQuality);
+    }
+  );
+
+  it.each([0, 1, 2, 3, 4])(
+    "update quality before sellIn quality %i",
+    function (q) {
+      const itemName = "Conjured foo";
+      const quality = q;
+      const sellIn = -1;
+      const gildedRose = new Shop([new Item(itemName, sellIn, quality)]);
+      const items = gildedRose.updateQuality();
+
+      const expectedQuality = 0;
+      const actualQuality = items[0].quality;
+
+      expect(actualQuality).toBe(expectedQuality);
+    }
+  );
+});
