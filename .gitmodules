@@ -1,0 +1,3 @@
+[submodule "chessington-js"]
+	path = chessington-js
+	url = git@github.com:kkd26/chessington-js.git
